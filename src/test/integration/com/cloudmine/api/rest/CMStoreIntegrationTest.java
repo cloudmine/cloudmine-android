@@ -196,7 +196,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         assertEquals(3, expectedLoadedUsers.size());
         waitThenAssertTestResults();
 
-        store.loadUserProfilesSearch("[age < 30]", testCallback(new CMObjectResponseCallback() {
+        CMUser.loadUserProfilesSearch("[age < 30]", testCallback(new CMObjectResponseCallback() {
             public void onCompletion(CMObjectResponse response) {
                 assertTrue(response.wasSuccess());
                 for(CMObject expectedUser : expectedLoadedUsers) {
@@ -393,7 +393,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
             users.add(user);
             CMWebService.getService().insert(user);
         }
-        store.loadAllUserProfiles(testCallback(new CMObjectResponseCallback() {
+        CMUser.loadAllUserProfiles(testCallback(new CMObjectResponseCallback() {
             @Override
             public void onCompletion(CMObjectResponse response) {
                 assertTrue(response.wasSuccess());
@@ -410,7 +410,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         user.login(hasSuccess);
         waitThenAssertTestResults();
         store.setUser(user);
-        store.loadLoggedInUserProfile(testCallback(new CMObjectResponseCallback() {
+        CMUser.loadLoggedInUserProfile(user, testCallback(new CMObjectResponseCallback() {
             @Override
             public void onCompletion(CMObjectResponse response) {
                 assertTrue(response.wasSuccess());

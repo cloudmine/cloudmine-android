@@ -34,6 +34,8 @@
     <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/gen" isTestSource="false" />
     </content>
     <orderEntry type="module" module-name="cloudmine-javasdk" exported="" />
     <orderEntry type="module" module-name="src" exported="" scope="TEST" />
