@@ -45,7 +45,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
            SIMPLE_JSON + ",\n" +
             DEEP_KEYED_JSON +
             "}";
-    public static final CMUser USER = new AndroidCMUser("francis2@gmail.com", "GOD");
+    public static final CMUser USER = CMUser.CMUser("francis2@gmail.com", "GOD");
 
 
     @Test
@@ -261,7 +261,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     private CMUser randomUser() {
         String userName = UUID.randomUUID().toString().replaceAll("-", "") + "@gmail.com";
         String password = "the";
-        return new AndroidCMUser(userName,  password);
+        return CMUser.CMUser(userName,  password);
     }
 
     @Test
