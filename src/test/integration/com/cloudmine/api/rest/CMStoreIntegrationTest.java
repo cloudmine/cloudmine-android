@@ -196,7 +196,9 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         assertEquals(3, expectedLoadedUsers.size());
         waitThenAssertTestResults();
 
-        CMUser.searchUserProfiles("[age < 30]", testCallback(new CMObjectResponseCallback() {
+        CMRequestOptions options = CMRequestOptions.CMRequestOptions(CMPagingOptions.ALL_RESULTS);
+
+        CMUser.searchUserProfiles("[age < 30]", options, testCallback(new CMObjectResponseCallback() {
             public void onCompletion(CMObjectResponse response) {
                 assertTrue(response.wasSuccess());
                 for (CMObject expectedUser : expectedLoadedUsers) {
