@@ -1,7 +1,6 @@
 package com.cloudmine.api.rest;
 
 import com.cloudmine.api.*;
-import com.cloudmine.api.CMObject;
 import com.cloudmine.api.rest.callbacks.CMObjectResponseCallback;
 import com.cloudmine.api.rest.callbacks.FileLoadCallback;
 import com.cloudmine.api.rest.callbacks.LoginResponseCallback;
@@ -15,6 +14,7 @@ import com.cloudmine.api.rest.response.code.LoginCode;
 import com.cloudmine.api.rest.response.code.ObjectLoadCode;
 import com.cloudmine.api.rest.response.code.ObjectModificationCode;
 import com.cloudmine.test.CloudMineTestRunner;
+import com.cloudmine.test.ExtendedCMUser;
 import com.cloudmine.test.ServiceTestBase;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,7 +31,6 @@ import static com.cloudmine.test.AsyncTestResultsCoordinator.reset;
 import static com.cloudmine.test.AsyncTestResultsCoordinator.waitThenAssertTestResults;
 import static com.cloudmine.test.TestServiceCallback.testCallback;
 import static junit.framework.Assert.*;
-import static junit.framework.Assert.assertEquals;
 
 /**
  * <br>Copyright CloudMine LLC. All rights reserved<br> See LICENSE file included with SDK for details.
@@ -41,7 +40,6 @@ import static junit.framework.Assert.assertEquals;
 @RunWith(CloudMineTestRunner.class)
 public class CMStoreIntegrationTest extends ServiceTestBase {
     private CMStore store;
-    private int FUTURE_WAIT_TIME = 10;
 
     @Before
     public void setUp() {
@@ -175,9 +173,38 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         user().logout(hasSuccess);
         waitThenAssertTestResults();
         store.setUser(user());
+        user().setPassword(USER_PASSWORD);
         store.loadUserObjectsOfClass("testObject", hasSuccessAndHasLoaded(object));
         waitThenAssertTestResults();
 
+    }
+
+    @Test
+    public void testLoadUserProfilesSearch() {
+
+        int numberOfUsers = 5;
+        reset(numberOfUsers);
+        final List<ExtendedCMUser> expectedLoadedUsers = new ArrayList<ExtendedCMUser>();
+        for(int ageMultiplier = 0; ageMultiplier < numberOfUsers; ageMultiplier++) {
+            ExtendedCMUser user = new ExtendedCMUser(randomEmail(), randomString());
+            user.setAge(ageMultiplier * 10);
+            user.save(testCallback());
+            if(user.getAge() < 30) {
+                expectedLoadedUsers.add(user);
+            }
+        }
+        assertEquals(3, expectedLoadedUsers.size());
+        waitThenAssertTestResults();
+
+        store.loadUserProfilesSearch("[age < 30]", testCallback(new CMObjectResponseCallback() {
+            public void onCompletion(CMObjectResponse response) {
+                assertTrue(response.wasSuccess());
+                for(CMObject expectedUser : expectedLoadedUsers) {
+                    assertEquals(expectedUser, response.getCMObject(expectedUser.getObjectId()));
+                }
+            }
+        }));
+        waitThenAssertTestResults();
     }
 
     @Test
@@ -251,6 +278,7 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
         store.saveFile(file, hasSuccess);
         waitThenAssertTestResults();
         user.logout(hasSuccess);
+        user.setPassword(USER_PASSWORD);
         waitThenAssertTestResults();
         store.loadUserFile(file.getFileName(), testCallback(new FileLoadCallback(file.getFileName()) {
             public void onCompletion(FileLoadResponse response) {
@@ -354,6 +382,41 @@ public class CMStoreIntegrationTest extends ServiceTestBase {
                 assertEquals(5, loadResponse.getCount());
             }
         }), options);
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testLoadAllUsers() {
+        final List<CMUser> users = new ArrayList<CMUser>();
+        for(String userName : new String[]{"fred", "liz", "sarah"}) {
+            CMUser user = CMUser.CMUser(userName + "@gmail.com", "password");
+            users.add(user);
+            CMWebService.getService().insert(user);
+        }
+        store.loadAllUserProfiles(testCallback(new CMObjectResponseCallback() {
+            @Override
+            public void onCompletion(CMObjectResponse response) {
+                assertTrue(response.wasSuccess());
+                assertTrue(response.getObjects().size() >= 3);
+            }
+        }));
+        waitThenAssertTestResults();
+    }
+
+    @Test
+    public void testLoadLoggedInUser() {
+        final CMUser user = user();
+        service.insert(user);
+        user.login(hasSuccess);
+        waitThenAssertTestResults();
+        store.setUser(user);
+        store.loadLoggedInUserProfile(testCallback(new CMObjectResponseCallback() {
+            @Override
+            public void onCompletion(CMObjectResponse response) {
+                assertTrue(response.wasSuccess());
+//                assertEquals(user, response.getObjects().get(0)); //TODO once CMUsers work correctly with deserialization we can fix this
+            }
+        }));
         waitThenAssertTestResults();
     }
 }

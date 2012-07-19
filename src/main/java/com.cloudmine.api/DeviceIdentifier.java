@@ -2,6 +2,9 @@ package com.cloudmine.api;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import com.cloudmine.api.rest.AndroidAsynchronousHttpClient;
+import com.cloudmine.api.rest.AndroidBase64Encoder;
+import com.cloudmine.api.rest.AndroidHeaderFactory;
 import org.apache.http.Header;
 import org.apache.http.message.BasicHeader;
 
@@ -27,6 +30,9 @@ public class DeviceIdentifier {
      * @param context the application context, accessable from an activity this.getApplicationContext()
      */
     public static void initialize(Context context) {
+        //Not related to DeviceIdentifier but we need to do the DI somewhere and this is as good as any
+        LibrarySpecificClassCreator.setCreator(new LibrarySpecificClassCreator(new AndroidBase64Encoder(), new AndroidHeaderFactory(), new AndroidAsynchronousHttpClient()));
+
         SharedPreferences preferences = context.getSharedPreferences("CLOUDMINE_PREFERENCES", Context.MODE_PRIVATE);
         boolean isNotSet = !preferences.contains(UNIQUE_ID_KEY);
         if(isNotSet) {

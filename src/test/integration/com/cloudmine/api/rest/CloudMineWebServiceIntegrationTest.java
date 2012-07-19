@@ -45,24 +45,24 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
            SIMPLE_JSON + ",\n" +
             DEEP_KEYED_JSON +
             "}";
-    public static final CMUser USER = new AndroidCMUser("francis2@gmail.com", "GOD");
+    public static final CMUser USER = CMUser.CMUser("francis2@gmail.com", "GOD");
 
 
     @Test
     @Ignore
     public void testSentHeaders() { //TODO this test doesn't work but its not cause the impplementation is broken
 
-        AndroidCMWebService androidService = AndroidCMWebService.getService();
-        androidService.delete("someKey");
+
+        service.delete("someKey");
 
         HttpRequest sentRequest = Robolectric.getSentHttpRequest(0);
         Header idHeader = sentRequest.getFirstHeader(DeviceIdentifier.DEVICE_HEADER_KEY);
         assertNotNull(idHeader);
         assertEquals(DeviceIdentifier.getUniqueId(), idHeader.getValue());
 
-        Header agentHeader = sentRequest.getFirstHeader(CMWebService.AGENT_HEADER_KEY);
+        Header agentHeader = sentRequest.getFirstHeader(HeaderFactory.AGENT_HEADER_KEY);
         assertNotNull(agentHeader);
-        assertEquals(AndroidCMWebService.CLOUD_MINE_AGENT, agentHeader.getValue());
+        assertEquals(AndroidHeaderFactory.CLOUD_MINE_AGENT, agentHeader.getValue());
     }
 
     @Test
@@ -261,7 +261,7 @@ public class CloudMineWebServiceIntegrationTest extends ServiceTestBase{
     private CMUser randomUser() {
         String userName = UUID.randomUUID().toString().replaceAll("-", "") + "@gmail.com";
         String password = "the";
-        return new AndroidCMUser(userName,  password);
+        return CMUser.CMUser(userName,  password);
     }
 
     @Test

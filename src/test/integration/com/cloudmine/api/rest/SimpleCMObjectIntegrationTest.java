@@ -32,7 +32,7 @@ public class SimpleCMObjectIntegrationTest extends ServiceTestBase {
         object.add("string", "value");
         object.save(TestServiceCallback.testCallback(new ObjectModificationResponseCallback() {
             public void onCompletion(ObjectModificationResponse response) {
-                CMObjectResponse loadResponse = AndroidCMWebService.getService().loadObject(object.getObjectId());
+                CMObjectResponse loadResponse = CMWebService.getService().loadObject(object.getObjectId());
                 Assert.assertTrue(loadResponse.wasSuccess());
                 SimpleCMObject loadedObject = (SimpleCMObject)loadResponse.getCMObject(object.getObjectId());
                 assertEquals(object, loadedObject);
