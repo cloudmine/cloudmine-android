@@ -27,16 +27,15 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.IOException;
 import java.net.ConnectException;
-import java.util.concurrent.Callable;
 
-class AsyncHttpRequest<T> implements Callable<T> {
+class AsyncHttpRequest implements Runnable {
     private final AbstractHttpClient client;
     private final HttpContext context;
     private final HttpUriRequest request;
-    private final AsyncHttpResponseHandler<T> responseHandler;
+    private final AsyncHttpResponseHandler responseHandler;
     private int executionCount;
 
-    public AsyncHttpRequest(AbstractHttpClient client, HttpContext context, HttpUriRequest request, AsyncHttpResponseHandler<T> responseHandler) {
+    public AsyncHttpRequest(AbstractHttpClient client, HttpContext context, HttpUriRequest request, AsyncHttpResponseHandler responseHandler) {
         this.client = client;
         this.context = context;
         this.request = request;
@@ -62,22 +61,20 @@ class AsyncHttpRequest<T> implements Callable<T> {
         }
     }
     
-    private T makeRequest() throws IOException {
-        T fromRequest = null;
+    private void makeRequest() throws IOException {
     	if(!Thread.currentThread().isInterrupted()) {
     		HttpResponse response = client.execute(request, context);
     		if(!Thread.currentThread().isInterrupted()) {
     			if(responseHandler != null) {
-    				fromRequest = responseHandler.sendResponseMessage(response);
+    				responseHandler.sendResponseMessage(response);
     			}
     		} else{
     			//TODO: should raise InterruptedException? this block is reached whenever the request is cancelled before its response is received
     		}
     	}
-        return fromRequest;
     }
 
-    private T makeRequestWithRetries() throws ConnectException {
+    private void makeRequestWithRetries() throws ConnectException {
         // This is an additional layer of retry logic lifted from droid-fu
         // See: https://github.com/kaeppler/droid-fu/blob/master/src/main/java/com/github/droidfu/http/BetterHttpRequestBase.java
         boolean retry = true;
@@ -85,10 +82,8 @@ class AsyncHttpRequest<T> implements Callable<T> {
         HttpRequestRetryHandler retryHandler = client.getHttpRequestRetryHandler();
         while (retry) {
             try {
-                T requestResponse = makeRequest();
-                if(requestResponse != null) {
-                    return requestResponse;
-                }
+                makeRequest();
+                return;
             } catch (IOException e) {
                 cause = e;
                 retry = retryHandler.retryRequest(cause, ++executionCount, context);
@@ -105,27 +100,5 @@ class AsyncHttpRequest<T> implements Callable<T> {
         ConnectException ex = new ConnectException();
         ex.initCause(cause);
         throw ex;
-    }
-
-    @Override
-    public T call() throws Exception {
-        T response = null;
-        try {
-            if(responseHandler != null){
-                responseHandler.sendStartMessage();
-            }
-
-            response = makeRequestWithRetries();
-
-            if(responseHandler != null) {
-                responseHandler.sendFinishMessage();
-            }
-        } catch (IOException e) {
-            if(responseHandler != null) {
-                responseHandler.sendFinishMessage();
-                responseHandler.sendFailureMessage(e, null);
-            }
-        }
-        return response;
     }
 }

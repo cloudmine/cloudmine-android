@@ -37,7 +37,6 @@
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/gen" isTestSource="false" />
     </content>
-    <orderEntry type="library" name="Clover IDEA Plugin" level="application" />
     <orderEntry type="module" module-name="cloudmine-javasdk" exported="" />
     <orderEntry type="module" module-name="src" exported="" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="junit:junit:4.10" level="project" />

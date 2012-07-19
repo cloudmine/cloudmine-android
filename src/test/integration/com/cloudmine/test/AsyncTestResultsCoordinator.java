@@ -29,14 +29,24 @@ public class AsyncTestResultsCoordinator {
     }
 
     public static void waitThenAssertTestResults() {
-        waitForTestResults();
+        waitThenAssertTestResults(TIMEOUT);
+    }
+
+    public static void waitThenAssertTestResults(int secondsToWait) {
+        waitForTestResults(secondsToWait);
         assertAsyncTaskResult();
         reset();
     }
 
+
+
     public static void waitForTestResults() {
+        waitForTestResults(TIMEOUT);
+    }
+
+    public static void waitForTestResults(int secondsToWait) {
         try {
-            boolean timedOut = !latch.await(TIMEOUT, TimeUnit.SECONDS);
+            boolean timedOut = !latch.await(secondsToWait, TimeUnit.SECONDS);
             if(timedOut) {
                 throw new RuntimeException("Timedout!");
             }

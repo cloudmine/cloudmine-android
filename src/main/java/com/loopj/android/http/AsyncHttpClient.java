@@ -471,18 +471,18 @@ public class AsyncHttpClient {
         sendRequest(httpClient, httpContext, delete, null, responseHandler, context);
     }
 
-    public <T> Future<T> execute(HttpUriRequest request, AsyncHttpResponseHandler handler) {
-        return sendRequest(httpClient, httpContext, request, null, handler, null);
+    public void execute(HttpUriRequest request, AsyncHttpResponseHandler handler) {
+        sendRequest(httpClient, httpContext, request, null, handler, null);
     }
 
 
     // Private stuff
-    private <T> Future<T> sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest, String contentType, AsyncHttpResponseHandler<T> responseHandler, Context context) {
+    private void sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest, String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
         if(contentType != null) {
             uriRequest.addHeader("Content-Type", contentType);
         }
 
-        Future<T> request = threadPool.submit(new AsyncHttpRequest(client, httpContext, uriRequest, responseHandler));
+        Future<?> request = threadPool.submit(new AsyncHttpRequest(client, httpContext, uriRequest, responseHandler));
 
         if(context != null) {
             // Add request to request map
@@ -496,7 +496,6 @@ public class AsyncHttpClient {
 
             // TODO: Remove dead weakrefs from requestLists?
         }
-        return request;
     }
 
     private String getUrlWithQueryString(String url, RequestParams params) {
