@@ -37,12 +37,22 @@
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/gen" isTestSource="false" />
     </content>
-    <orderEntry type="module" module-name="cloudmine-javasdk" exported="" />
     <orderEntry type="module" module-name="src" exported="" scope="TEST" />
     <orderEntry type="library" scope="TEST" name="junit:junit:4.10" level="project" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="jdk" jdkName="Android 2.3.3 Google APIs" jdkType="Android SDK" />
     <orderEntry type="library" name="org.slf4j:slf4j-api:1.6.4" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lib/httpclient-4.0-beta2.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="module" module-name="cloudmine-javasdk" exported="" />
+    <orderEntry type="library" name="httpcore-4.0-beta3" level="project" />
   </component>
 </module>
 

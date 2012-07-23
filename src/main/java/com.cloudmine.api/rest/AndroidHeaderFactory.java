@@ -11,7 +11,7 @@ import java.util.Set;
  * See LICENSE file included with SDK for details.
  */
 public class AndroidHeaderFactory extends HeaderFactoryStandardImpl {
-    public static final String CLOUD_MINE_AGENT = "Android 1.0";
+    public static final String CLOUD_MINE_AGENT = "Android/0.2";
 
     @Override
     public Set<Header> getCloudMineHeaders() {

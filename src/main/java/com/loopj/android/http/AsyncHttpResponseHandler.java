@@ -211,9 +211,13 @@ public class AsyncHttpResponseHandler<T> {
     }
 
     private void completedThenConsume(HttpResponse response) {
-        T responseObject = responseConstructor.construct(response);
-        CMWebService.consumeEntityResponse(response);
-        sendCompletedMessage(responseObject);
+        try {
+            T responseObject = responseConstructor.construct(response);
+            CMWebService.consumeEntityResponse(response);
+            sendCompletedMessage(responseObject);
+        } catch(Exception e) {
+            sendFailureMessage(e, "Unable to construct response object");
+        }
     }
 
 
