@@ -19,16 +19,21 @@
 
 package com.loopj.android.http;
 
+import com.cloudmine.api.rest.ResponseTimeDataStore;
+import com.cloudmine.api.rest.callbacks.Callback;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.protocol.HttpContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ConnectException;
 
 class AsyncHttpRequest implements Runnable {
+    private static final Logger LOG = LoggerFactory.getLogger(AsyncHttpRequest.class);
     private final AbstractHttpClient client;
     private final HttpContext context;
     private final HttpUriRequest request;
@@ -66,6 +71,11 @@ class AsyncHttpRequest implements Runnable {
     		HttpResponse response = client.execute(request, context);
     		if(!Thread.currentThread().isInterrupted()) {
     			if(responseHandler != null) {
+                    if(responseHandler instanceof Callback) {
+                        ResponseTimeDataStore.extractAndStoreResponseTimeInformation((Callback) responseHandler, response);
+                    } else {
+                        LOG.error("We have a non callback responseHandler; this should never happen. Not storing response time information");
+                    }
     				responseHandler.sendResponseMessage(response);
     			}
     		} else{

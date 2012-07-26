@@ -212,6 +212,7 @@ public class AsyncHttpResponseHandler<T> {
 
     private void completedThenConsume(HttpResponse response) {
         try {
+
             T responseObject = responseConstructor.construct(response);
             CMWebService.consumeEntityResponse(response);
             sendCompletedMessage(responseObject);

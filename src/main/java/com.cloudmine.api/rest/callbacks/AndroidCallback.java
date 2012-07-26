@@ -12,8 +12,9 @@ public final class AndroidCallback<T> extends AsyncHttpResponseHandler<T> implem
 
     private final Callback callback;
 
+
     public AndroidCallback(ResponseConstructor<T> constructor) {
-        this(Callback.DO_NOTHING, constructor);
+        this(CMCallback.doNothing(), constructor);
     }
 
     public AndroidCallback(Callback callback, ResponseConstructor<T> constructor) {
@@ -30,5 +31,15 @@ public final class AndroidCallback<T> extends AsyncHttpResponseHandler<T> implem
     @Override
     public void onFailure(Throwable error, String message) {
         callback.onFailure(error, message);
+    }
+
+    @Override
+    public void setStartTime(long startTime) {
+        callback.setStartTime(startTime);
+    }
+
+    @Override
+    public long getStartTime() {
+        return callback.getStartTime();
     }
 }
