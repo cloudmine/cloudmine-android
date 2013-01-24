@@ -231,7 +231,9 @@ public class AsyncHttpResponseHandler<T> {
         StatusLine status = response.getStatusLine();
         try {
             completedThenConsume(response);
-        } finally {
+        } catch(Exception e) {
+            sendFailureMessage(e, "Failed constructed response");
+        }finally {
             if(status.getStatusCode() >= 300) {
                 sendFailureMessage(new HttpResponseException(status.getStatusCode(), status.getReasonPhrase()), "");
             }

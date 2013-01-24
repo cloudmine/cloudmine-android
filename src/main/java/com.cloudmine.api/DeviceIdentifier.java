@@ -40,7 +40,6 @@ public class DeviceIdentifier {
             String uniqueId = generateUniqueDeviceIdentifier();
             SharedPreferences.Editor editor = preferences.edit();
             editor.putString(UNIQUE_ID_KEY, uniqueId);
-            System.out.println("Changed");
             editor.commit();
         }
         uniqueId = preferences.getString(UNIQUE_ID_KEY, null); //null here so if we aren't getting the unique key, we fail hard
